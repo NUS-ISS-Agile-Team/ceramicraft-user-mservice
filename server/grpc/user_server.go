@@ -7,11 +7,11 @@ import (
 	"github.com/NUS-ISS-Agile-Team/ceramicraft-user-mservice/server/log"
 )
 
-type UserServervice struct {
+type UserService struct {
 	userpb.UnimplementedUserServiceServer
 }
 
-func (s *UserServervice) SayHello(ctx context.Context, in *userpb.HelloRequest) (*userpb.HelloResponse, error) {
+func (s *UserService) SayHello(ctx context.Context, in *userpb.HelloRequest) (*userpb.HelloResponse, error) {
 	log.Logger.Infof("Received: %v", in.GetName())
 	return &userpb.HelloResponse{Message: "Hello " + in.GetName()}, nil
 }

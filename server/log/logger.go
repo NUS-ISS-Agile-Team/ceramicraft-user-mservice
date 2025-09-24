@@ -14,8 +14,6 @@ var (
 	Logger *zap.SugaredLogger
 )
 
-// 默认日志等级DEBUG
-// 默认日志输出路径: 根目录下test.log
 func InitLogger() {
 	writeSyncer := getLogWriter()
 	encoder := getEncoder()
@@ -43,13 +41,17 @@ func getEncoder() zapcore.Encoder {
 }
 
 func getLogWriter() zapcore.WriteSyncer {
-	cwd, _ := os.Getwd()
+	cwd, err := os.Getwd()
+	if err != nil {
+		fmt.Printf("Failed to get current working directory: %v\n", err)
+		panic(err)
+	}
 	logPath := filepath.Join(cwd, config.Config.LogConfig.FilePath)
 	dir := filepath.Dir(logPath)
 	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
 		panic(fmt.Sprintf("Failed to create directories: %v", err))
 	}
-	file, err := os.Create(logPath)
+	file, err := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {
 		panic(err)
 	}

@@ -35,11 +35,11 @@ type GrpcConfig struct {
 }
 
 type MySQL struct {
-	Host     string `yaml:"host"`
-	Port     string `yaml:"port"`
-	UserName string `yaml:"userName"`
-	Password string `yaml:"password"`
-	DBName   string `yaml:"dbName"`
+	Host     string `mapstructure:"host"`
+	Port     string `mapstructure:"port"`
+	UserName string `mapstructure:"userName"`
+	Password string `mapstructure:"password"`
+	DBName   string `mapstructure:"dbName"`
 }
 
 func Init() {
@@ -56,5 +56,11 @@ func Init() {
 	err = viper.Unmarshal(&Config)
 	if err != nil {
 		panic(err)
+	}
+	mysqlPassword := os.Getenv("mysql_password")
+	if mysqlPassword != "" {
+		Config.MySQLConfig.Password = mysqlPassword
+	} else {
+		panic("mysql_password environment variable is not set")
 	}
 }

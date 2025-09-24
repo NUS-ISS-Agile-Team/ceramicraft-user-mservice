@@ -24,6 +24,6 @@ func main() {
 	go http.Init(sigCh)
 	// listen terminage signal
 	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
-	sig := <-sigCh // 阻塞直到收到信号
+	sig := <-sigCh // Block until signal is received
 	log.Logger.Infof("Received signal: %v, shutting down...", sig)
 }
