@@ -1,0 +1,43 @@
+# This workflow will build a golang project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
+
+name: build and test
+
+on:
+  push:
+    branches: [ "*" ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.24'
+        cache: true
+
+    - name: Build All and Test
+      run: |
+        for module in common client server; do
+          echo "Building and testing module: $module"
+          cd $module
+          go build -v ./...
+          go test -v ./...
+          cd ..
+        done
+    - name: Lint
+      uses: golangci/golangci-lint-action@55c2c1448f86e01eaae002a5a3a9624417608d84
+      with:
+          version: latest
+          working-directory: server/          # go.mod 所在目录
+          args: --timeout=5m
+      env:  
+        goLANGCI_LINT_RUN: |
+          for module in common client server; do
+            echo "Linting module: $module"
+            golangci-lint run --timeout=5m $module/...
+          done
