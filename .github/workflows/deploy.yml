@@ -52,7 +52,7 @@ jobs:
         run: |
           docker stop ceramicraft-user-mservice || true
           docker rm ceramicraft-user-mservice || true
-          docker run -d --name ceramicraft-user-mservice --network ceramicraft-network -p 8080:8080 "${DOCKER_HUB_USERNAME}/ceramicraft-user-mservice:${{ github.event.inputs.version }}"
+          docker run -d --name ceramicraft-user-mservice --network ceramicraft-network -e MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} -p 8080:8080 "${DOCKER_HUB_USERNAME}/ceramicraft-user-mservice:${{ github.event.inputs.version }}"
   restart:
     if: ${{ github.event.inputs.command == 'restart' }}
     runs-on: self-hosted
