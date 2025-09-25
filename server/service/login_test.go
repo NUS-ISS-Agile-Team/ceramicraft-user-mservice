@@ -19,6 +19,7 @@ func initEnv() {
 			Level:    "debug",
 			FilePath: "",
 		},
+		EmailConfig: &config.EmailConfig{},
 	}
 	log.InitLogger()
 	err := os.Setenv("JWT_SECRET", "TEST_SECRET_KEY")

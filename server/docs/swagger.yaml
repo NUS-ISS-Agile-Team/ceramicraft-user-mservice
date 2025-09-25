@@ -7,6 +7,15 @@ definitions:
       err_msg:
         type: string
     type: object
+  data.UserActivateReq:
+    properties:
+      code:
+        maxLength: 6
+        minLength: 6
+        type: string
+    required:
+    - code
+    type: object
   data.UserVO:
     properties:
       email:
@@ -15,6 +24,9 @@ definitions:
         type: integer
       password:
         type: string
+    required:
+    - email
+    - password
     type: object
 info:
   contact: {}
@@ -74,4 +86,54 @@ paths:
       summary: User Logout
       tags:
       - Authentication
+  /user-ms/v1/users:
+    post:
+      consumes:
+      - application/json
+      description: This endpoint allows a new user to register by providing their
+        details in JSON format.
+      parameters:
+      - description: User registration details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/data.UserVO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/data.BaseResponse'
+      summary: Register a new user
+      tags:
+      - User
+  /user-ms/v1/users/activate:
+    put:
+      consumes:
+      - application/json
+      description: This endpoint allows a new user to activate by providing their
+        verification code in JSON format.
+      parameters:
+      - description: User activate request
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/data.UserActivateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/data.BaseResponse'
+      summary: Activate a new user
+      tags:
+      - User
 swagger: "2.0"
