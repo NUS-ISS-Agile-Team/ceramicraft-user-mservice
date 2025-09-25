@@ -33,6 +33,9 @@ func GetUserServiceClient(config *GRpcClientConfig) (userpb.UserServiceClient, e
 
 func Destroy() {
 	if conn != nil {
-		conn.Close()
+		err := conn.Close()
+		if err != nil {
+			fmt.Printf("Failed to close gRPC connection: %v\n", err)
+		}
 	}
 }
