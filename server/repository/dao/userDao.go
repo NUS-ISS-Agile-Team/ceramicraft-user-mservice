@@ -52,7 +52,7 @@ func (dao *UserDaoImpl) CreateUser(ctx context.Context, user *model.User) (int, 
 func (dao *UserDaoImpl) UpdateUser(ctx context.Context, user *model.User, tx *gorm.DB) error {
 	ret := tx.WithContext(ctx).Model(&model.User{}).Where("id = ?", user.ID).Updates(user)
 	if ret.Error != nil {
-		log.Logger.Errorf("Failed to update user: ", ret.Error)
+		log.Logger.Errorf("Failed to update user: %v", ret.Error)
 		return ret.Error
 	}
 	return nil
@@ -65,7 +65,7 @@ func (dao *UserDaoImpl) GetUserByEmail(ctx context.Context, email string) (*mode
 		if errors.Is(ret.Error, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
-		log.Logger.Errorf("Failed to get user by email: ", ret.Error)
+		log.Logger.Errorf("Failed to get user by email: %v", ret.Error)
 		return nil, ret.Error
 	}
 	return &user, nil

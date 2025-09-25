@@ -18,19 +18,8 @@ type UserServiceImpl struct {
 
 var (
 	registerOnce    = sync.Once{}
-	registerService *UserServiceImpl
+	RegisterService = &UserServiceImpl{userDao: dao.GetUserDao()}
 )
-
-func GetRegisterService() *UserServiceImpl {
-	registerOnce.Do(func() {
-		if registerService == nil {
-			registerService = &UserServiceImpl{
-				userDao: dao.GetUserDao(),
-			}
-		}
-	})
-	return registerService
-}
 
 func (s *UserServiceImpl) Create(ctx context.Context, email, password string) error {
 	_, err := s.userDao.CreateUser(ctx, &model.User{

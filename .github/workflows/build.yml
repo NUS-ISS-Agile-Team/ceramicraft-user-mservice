@@ -29,15 +29,22 @@ jobs:
           go test -v ./...
           cd ..
         done
-    - name: Lint
-      uses: golangci/golangci-lint-action@55c2c1448f86e01eaae002a5a3a9624417608d84
-      with:
-          version: latest
-          working-directory: server/          # go.mod 所在目录
-          args: --timeout=5m
-      env:  
-        goLANGCI_LINT_RUN: |
-          for module in common client server; do
-            echo "Linting module: $module"
-            golangci-lint run --timeout=5m $module/...
-          done
+  lint:
+    name: Lint(multi-module)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        module: [common, client, server]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.24'
+          cache: true
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@4afd733a84b1f43292c63897423277bb7f4313a9
+        with:
+          args: --timeout 5m
+          working-directory: ${{ matrix.module }}
