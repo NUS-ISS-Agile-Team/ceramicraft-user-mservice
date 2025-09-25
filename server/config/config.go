@@ -57,10 +57,10 @@ func Init() {
 	if err != nil {
 		panic(err)
 	}
-	mysqlPassword := os.Getenv("mysql_password")
+	mysqlPassword := os.Getenv("MYSQL_PASSWORD")
 	if mysqlPassword != "" {
 		Config.MySQLConfig.Password = mysqlPassword
 	} else {
-		panic("mysql_password environment variable is not set")
+		panic("MYSQL_PASSWORD environment variable is not set")
 	}
 }

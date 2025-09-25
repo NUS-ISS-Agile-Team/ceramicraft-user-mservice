@@ -1,0 +1,40 @@
+name: Zap Scan
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
+
+jobs:
+    zap:
+        name: ZAP Scan
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435
+            
+            - name: Build and run Docker Compose
+              run: |
+                MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} docker compose -f .github/ci/docker-compose.yml up --build -d
+                timeout 180 bash -c 'until [ "$(docker compose -f .github/ci/docker-compose.yml ps ceramicraft-user-mservice --format json | jq -r .Health)" = "healthy" ]; do sleep 2; done'
+            - name: Check Docker Compose Logs
+              if: failure()
+              run: |
+                docker compose -f .github/ci/docker-compose.yml logs
+            - name: Run ZAP Scan
+              uses: zaproxy/action-full-scan@75ee1686750ab1511a73b26b77a2aedd295053ed
+              with:
+                target: 'http://localhost:8080'   # ZAP 访问宿主机映射端口
+                cmd_options: '-s'
+                fail_action: false                  # 有漏洞也不让 CI 失败
+                allow_issue_writing: false           # 关闭自动开 GitHub Issue
+                issue_title: 'ZAP 安全扫描告警'
+                artifact_name: 'zap-report'         # 附件报告
+            - name: Tear down
+              if: always()
+              run: docker compose -f .github/ci/docker-compose.yml down --volumes --remove-orphans

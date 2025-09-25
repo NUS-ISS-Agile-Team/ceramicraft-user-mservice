@@ -13,7 +13,7 @@ log:
   file_path: ./logs/user-server.log
 
 mysql:
-  host: "127.0.0.1"
+  host: "mysql-container"
   port: "3306"
   userName: "root"
   dbName: "user_db"
