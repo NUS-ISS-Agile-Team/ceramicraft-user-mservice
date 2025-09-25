@@ -1,4 +1,77 @@
+definitions:
+  data.BaseResponse:
+    properties:
+      code:
+        type: integer
+      data: {}
+      err_msg:
+        type: string
+    type: object
+  data.UserVO:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      password:
+        type: string
+    type: object
 info:
   contact: {}
-paths: {}
+paths:
+  /user-ms/v1/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a user with their email and password and returns
+        a token.
+      parameters:
+      - description: User login information
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/data.UserVO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Login successful, returns auth token in cookie
+          schema:
+            allOf:
+            - $ref: '#/definitions/data.BaseResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/data.BaseResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/data.BaseResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: User Login
+      tags:
+      - Authentication
+  /user-ms/v1/logout:
+    post:
+      description: invalidates the user's auth token cookie.
+      responses:
+        "200":
+          description: OK
+      summary: User Logout
+      tags:
+      - Authentication
 swagger: "2.0"

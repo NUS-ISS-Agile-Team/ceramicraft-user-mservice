@@ -41,6 +41,9 @@ func getEncoder() zapcore.Encoder {
 }
 
 func getLogWriter() zapcore.WriteSyncer {
+	if config.Config.LogConfig.FilePath == "" {
+		return zapcore.AddSync(os.Stdout)
+	}
 	cwd, err := os.Getwd()
 	if err != nil {
 		fmt.Printf("Failed to get current working directory: %v\n", err)

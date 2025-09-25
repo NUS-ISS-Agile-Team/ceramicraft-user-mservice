@@ -19,6 +19,23 @@ on:
           - rollback
 
 jobs:
+  generate-env:
+    name: Generate .env file
+    runs-on: ubuntu-latest
+    outputs:
+      env-path: ${{ steps.set-output.outputs.env-path }}
+    steps:
+      - name: Generate .env file
+        run: |
+          echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> env-file
+          echo "SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}" >> env-file
+          echo "SMTP_EMAIL_FROM=${{ secrets.SMTP_EMAIL_FROM }}" >> env-file
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> env-file
+      - name: Upload env-file as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: env-file
+          path: env-file
   build:
     if: ${{ github.event.inputs.command == 'deploy' }} # ← 仅在 deploy 时构建
     runs-on: ubuntu-latest
@@ -40,11 +57,18 @@ jobs:
           docker push "${DOCKER_HUB_USERNAME}/ceramicraft-user-mservice:${{ github.event.inputs.version }}"
   deploy:
     if: ${{ github.event.inputs.command == 'deploy' }}
-    needs: build
+    needs: 
+        - build
+        - generate-env
     runs-on: self-hosted
     env:
       DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
     steps:
+      - name: Download .env file
+        uses: actions/download-artifact@v4
+        with:
+          name: env-file
+          path: .
       - name: pull the docker image
         run: |
           docker pull "${DOCKER_HUB_USERNAME}/ceramicraft-user-mservice:${{ github.event.inputs.version }}"
@@ -52,7 +76,7 @@ jobs:
         run: |
           docker stop ceramicraft-user-mservice || true
           docker rm ceramicraft-user-mservice || true
-          docker run -d --name ceramicraft-user-mservice --network ceramicraft-network -e MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} -p 8080:8080 "${DOCKER_HUB_USERNAME}/ceramicraft-user-mservice:${{ github.event.inputs.version }}"
+          docker run -d --name ceramicraft-user-mservice --network ceramicraft-network --env-file env-file "${DOCKER_HUB_USERNAME}/ceramicraft-user-mservice:${{ github.event.inputs.version }}"
   restart:
     if: ${{ github.event.inputs.command == 'restart' }}
     runs-on: self-hosted
@@ -63,9 +87,15 @@ jobs:
   rollback:
     if: ${{ github.event.inputs.command == 'rollback' }}
     runs-on: self-hosted
+    needs: generate-env
     env:
       DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
     steps:
+      - name: Download .env file
+        uses: actions/download-artifact@v4
+        with:
+          name: env-file
+          path: .
       - name: pull the docker image
         run: |
           docker pull "${DOCKER_HUB_USERNAME}/ceramicraft-user-mservice:${{ github.event.inputs.version }}"
@@ -73,4 +103,4 @@ jobs:
         run: |
           docker stop ceramicraft-user-mservice || true
           docker rm ceramicraft-user-mservice || true
-          docker run -d --name ceramicraft-user-mservice --network ceramicraft-network -p 8080:8080 "${DOCKER_HUB_USERNAME}/ceramicraft-user-mservice:${{ github.event.inputs.version }}"
+          docker run -d --name ceramicraft-user-mservice --network ceramicraft-network --env-file env-file "${DOCKER_HUB_USERNAME}/ceramicraft-user-mservice:${{ github.event.inputs.version }}"

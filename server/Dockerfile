@@ -25,7 +25,7 @@ RUN useradd -m appuser && \
     chmod +w logs && \
     chmod +x main
 
-EXPOSE 8080
+# EXPOSE 8080
 
 USER appuser
 
