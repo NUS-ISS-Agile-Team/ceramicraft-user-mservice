@@ -18,11 +18,11 @@ RUN go build -ldflags="-s -w" -o main main.go
 
 # Create a non-root user and set permissions
 RUN useradd -m appuser && \
-    mkdir -p log && \
+    mkdir -p logs && \
     chown -R appuser:appuser config/ && \
-    chown -R appuser:appuser log/ && \
+    chown -R appuser:appuser logs/ && \
     chmod +r config/* && \
-    chmod +w log && \
+    chmod +w logs && \
     chmod +x main
 
 EXPOSE 8080
