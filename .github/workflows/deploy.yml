@@ -1,7 +1,7 @@
 name: Deploy Go to EC2 (manual)
 
 on:
-  workflow_dispatch:          # ← 纯手动按钮
+  workflow_dispatch:          # ← Manual trigger button
     inputs:
       version:
         description: 'version'
@@ -34,7 +34,7 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
       - name: build docker image
         run: |
-          docker build -t "${DOCKER_HUB_USERNAME}/ceramicraft-user-mservice:${{ github.event.inputs.version }}" .
+          docker build -t "${DOCKER_HUB_USERNAME}/ceramicraft-user-mservice:${{ github.event.inputs.version }}" server/
       - name: push to dockerhub
         run: |
           docker push "${DOCKER_HUB_USERNAME}/ceramicraft-user-mservice:${{ github.event.inputs.version }}"

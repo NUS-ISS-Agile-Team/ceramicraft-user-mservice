@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"sync"
 
 	"github.com/NUS-ISS-Agile-Team/ceramicraft-user-mservice/server/repository/dao"
 	"github.com/NUS-ISS-Agile-Team/ceramicraft-user-mservice/server/repository/model"
@@ -17,7 +16,6 @@ type UserServiceImpl struct {
 }
 
 var (
-	registerOnce    = sync.Once{}
 	RegisterService = &UserServiceImpl{userDao: dao.GetUserDao()}
 )
 

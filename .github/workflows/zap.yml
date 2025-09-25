@@ -29,12 +29,12 @@ jobs:
             - name: Run ZAP Scan
               uses: zaproxy/action-full-scan@75ee1686750ab1511a73b26b77a2aedd295053ed
               with:
-                target: 'http://localhost:8080'   # ZAP 访问宿主机映射端口
+                target: 'http://localhost:8080'   # ZAP accesses the host-mapped port
                 cmd_options: '-s'
-                fail_action: false                  # 有漏洞也不让 CI 失败
-                allow_issue_writing: false           # 关闭自动开 GitHub Issue
-                issue_title: 'ZAP 安全扫描告警'
-                artifact_name: 'zap-report'         # 附件报告
+                fail_action: false                  # Do not fail CI even if vulnerabilities are found
+                allow_issue_writing: false           # Disable automatic creation of GitHub Issues
+                issue_title: 'ZAP Security Scan Alert'
+                artifact_name: 'zap-report'         # Attachment report
             - name: Tear down
               if: always()
               run: docker compose -f .github/ci/docker-compose.yml down --volumes --remove-orphans

@@ -25,7 +25,7 @@ func TestUserServiceImpl_Create(t *testing.T) {
 			mockFunc: func() {
 				mockDao.On("CreateUser", mock.Anything, mock.MatchedBy(
 					func(*model.User) bool { return true }, // 只校验类型，不比较字段
-				)).Return(-1, nil)
+				)).Return(1, nil)
 			},
 			wantErr: false,
 		},
