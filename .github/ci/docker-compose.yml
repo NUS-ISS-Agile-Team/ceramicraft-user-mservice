@@ -17,14 +17,17 @@ services:
       context: ../../server
       dockerfile: Dockerfile
     container_name: ceramicraft-user-mservice
+    environment:
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - SMTP_EMAIL_FROM=${SMTP_EMAIL_FROM}
+      - JWT_SECRET=${JWT_SECRET}
     depends_on:
       - mysql
     networks:
       - ci-net
     ports:
       - "8080:8080"   # 只给宿主机（ZAP）用
-    environment:
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     command: ["sh", "-c", "apt-get update && apt-get install -y netcat-openbsd && chmod +x /app/wait-for.sh && ./wait-for.sh mysql-container 3306 ./main"]
     volumes:
       - ./wait-for.sh:/app/wait-for.sh   # CI 专用配置

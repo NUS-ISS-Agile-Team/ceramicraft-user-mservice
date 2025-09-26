@@ -5,6 +5,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/NUS-ISS-Agile-Team/ceramicraft-user-mservice/common/utils"
 	"github.com/NUS-ISS-Agile-Team/ceramicraft-user-mservice/server/config"
 	"github.com/NUS-ISS-Agile-Team/ceramicraft-user-mservice/server/grpc"
 	"github.com/NUS-ISS-Agile-Team/ceramicraft-user-mservice/server/http"
@@ -19,6 +20,7 @@ var (
 func main() {
 	config.Init()
 	log.InitLogger()
+	utils.InitJwtSecret()
 	repository.Init()
 	go grpc.Init(sigCh)
 	go http.Init(sigCh)
