@@ -17,3 +17,6 @@ mysql:
   port: "3306"
   userName: "root"
   dbName: "user_db"
+
+email:
+  smtp_host: "smtp.qq.com"

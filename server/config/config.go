@@ -11,10 +11,17 @@ var (
 )
 
 type Conf struct {
-	GrpcConfig  *GrpcConfig `mapstructure:"grpc"`
-	LogConfig   *LogConfig  `mapstructure:"log"`
-	HttpConfig  *HttpConfig `mapstructure:"http"`
-	MySQLConfig *MySQL      `mapstructure:"mysql"`
+	GrpcConfig  *GrpcConfig  `mapstructure:"grpc"`
+	LogConfig   *LogConfig   `mapstructure:"log"`
+	HttpConfig  *HttpConfig  `mapstructure:"http"`
+	MySQLConfig *MySQL       `mapstructure:"mysql"`
+	EmailConfig *EmailConfig `mapstructure:"email"`
+}
+
+type EmailConfig struct {
+	SmtpHost      string `mapstructure:"smtp_host"`
+	SmtpEmailFrom string `mapstructure:"smtp_email_from"`
+	SmtpPass      string `mapstructure:"smtp_pass"`
 }
 
 type HttpConfig struct {
@@ -63,4 +70,6 @@ func Init() {
 	} else {
 		panic("MYSQL_PASSWORD environment variable is not set")
 	}
+	Config.EmailConfig.SmtpPass = os.Getenv("SMTP_PASSWORD")
+	Config.EmailConfig.SmtpEmailFrom = os.Getenv("SMTP_EMAIL_FROM")
 }

@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"database/sql"
 	"fmt"
 
 	"github.com/NUS-ISS-Agile-Team/ceramicraft-user-mservice/server/config"
@@ -13,6 +14,12 @@ var (
 	DB  *gorm.DB
 	err error
 )
+
+type TxBeginner interface {
+	Transaction(fc func(tx *gorm.DB) error, opts ...*sql.TxOptions) error
+}
+
+var _ TxBeginner = (*gorm.DB)(nil) // Compile-time interface check
 
 func Init() {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",

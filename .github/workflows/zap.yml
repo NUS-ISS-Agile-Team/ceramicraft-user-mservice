@@ -12,8 +12,6 @@ jobs:
   generate-env:
     name: Generate .env file
     runs-on: ubuntu-latest
-    outputs:
-      env-path: ${{ steps.set-output.outputs.env-path }}
     steps:
       - name: Generate .env file
         run: |
