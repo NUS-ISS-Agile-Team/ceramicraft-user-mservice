@@ -18,10 +18,11 @@ const tokenExpireDuration = 3600 * 24 * 365 // 1 year
 // @Accept json
 // @Produce json
 // @Param user body data.UserVO true "User login information"
+// @Param client path string true "Client identifier" Enums(customer, merchant)
 // @Success 200	{object} data.BaseResponse{data=string} "Login successful, returns auth token in cookie"
 // @Failure 400 {object} data.BaseResponse{data=string}
 // @Failure 500 {object} data.BaseResponse{data=string}
-// @Router /user-ms/v1/login [post]
+// @Router /user-ms/v1/{client}/login [post]
 func UserLogin(c *gin.Context) {
 	user := &data.UserVO{}
 	if err := c.ShouldBindJSON(&user); err != nil {
@@ -42,8 +43,9 @@ func UserLogin(c *gin.Context) {
 // @Summary User Logout
 // @Description invalidates the user's auth token cookie.
 // @Tags Authentication
+// @Param client path string true "Client identifier" Enums(customer, merchant)
 // @Success 200
-// @Router /user-ms/v1/logout [post]
+// @Router /user-ms/v1/{client}/logout [post]
 func UserLogout(c *gin.Context) {
 	// Invalidate the auth-token cookie by setting its MaxAge to -1
 	c.SetCookie("auth-token", "", -1, "/", c.Request.Host, true, true)

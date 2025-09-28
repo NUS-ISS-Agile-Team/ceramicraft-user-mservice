@@ -15,9 +15,10 @@ import (
 // @Accept json
 // @Produce json
 // @Param user body data.UserVO true "User registration details"
+// @Param client path string true "Client identifier" Enums(customer, merchant)
 // @Success 200
 // @Failure 500 {object} data.BaseResponse
-// @Router /user-ms/v1/users [post]
+// @Router /user-ms/v1/{client}/users [post]
 func Register(c *gin.Context) {
 	user := &data.UserVO{}
 	if err := c.ShouldBindJSON(&user); err != nil {
@@ -39,9 +40,10 @@ func Register(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param user body data.UserActivateReq true "User activate request"
+// @Param client path string true "Client identifier" Enums(customer, merchant)
 // @Success 200
 // @Failure 500 {object} data.BaseResponse
-// @Router /user-ms/v1/users/activate [put]
+// @Router /user-ms/v1/{client}/users/activate [put]
 func Validate(c *gin.Context) {
 	req := &data.UserActivateReq{}
 	if err := c.ShouldBindJSON(&req); err != nil {
