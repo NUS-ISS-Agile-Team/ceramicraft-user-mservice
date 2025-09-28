@@ -32,6 +32,11 @@ jobs:
               -Dsonar.projectKey=NUS-ISS-Agile-Team_ceramicraft-user-mservice
               -Dsonar.sources=server/service
               -Dsonar.go.coverage.reportPaths=server/coverage.out
+      - name: SonarCloud Quality Gate check
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   snyk:
     name: Snyk Vulnerability Scan
     runs-on: ubuntu-latest

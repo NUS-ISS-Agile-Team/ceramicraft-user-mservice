@@ -14,6 +14,10 @@ import (
 	gs "github.com/swaggo/gin-swagger"
 )
 
+const (
+	serviceURIPrefix = "/user-ms/v1"
+)
+
 func NewRouter() *gin.Engine {
 	r := gin.Default()
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
@@ -23,26 +27,30 @@ func NewRouter() *gin.Engine {
 		}
 	}
 
-	v1UnAuthed := r.Group("/user-ms/v1")
+	basicGroup := r.Group(serviceURIPrefix)
 	{
-		// swagger router
-		v1UnAuthed.GET("/swagger/*any", gs.WrapHandler(
+		basicGroup.GET("/swagger/*any", gs.WrapHandler(
 			swaggerFiles.Handler,
 			gs.URL("/user-ms/v1/swagger/doc.json"),
 		))
-		v1UnAuthed.GET("/ping", func(c *gin.Context) {
+		basicGroup.GET("/ping", func(c *gin.Context) {
 			c.JSON(200, gin.H{
 				"message": "pong",
 			})
 		})
+	}
+
+	v1UnAuthed := r.Group(serviceURIPrefix + "/:client")
+	{
+		v1UnAuthed.Use(validateClient())
 		v1UnAuthed.POST("/login", api.UserLogin)
 		v1UnAuthed.POST("/users", api.Register)
 		v1UnAuthed.PUT("/users/activate", api.Validate)
 	}
-	v1Authed := r.Group("/user-ms/v1")
+	v1Authed := r.Group(serviceURIPrefix + "/:client")
 	{
-		v1Authed.Use(middleware.AuthMiddleware())
-		v1Authed.POST(("/logout"), api.UserLogout)
+		v1Authed.Use(validateClient(), middleware.AuthMiddleware())
+		v1Authed.POST("/logout", api.UserLogout)
 	}
 	return r
 }
@@ -58,4 +66,16 @@ var passwordStrengthValidator validator.Func = func(fl validator.FieldLevel) boo
 	isValidLength := len(password) >= 8
 
 	return hasLetter && hasDigit && isValidLength
+}
+
+func validateClient() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		client := c.Param("client")
+		if client != "merchant" && client != "customer" {
+			c.JSON(400, gin.H{"error": "Invalid client type"})
+			c.Abort()
+			return
+		}
+		c.Next()
+	}
 }

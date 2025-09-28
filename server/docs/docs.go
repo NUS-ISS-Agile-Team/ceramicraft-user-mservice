@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/user-ms/v1/login": {
+        "/user-ms/v1/{client}/login": {
             "post": {
                 "description": "Authenticates a user with their email and password and returns a token.",
                 "consumes": [
@@ -37,6 +37,17 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/data.UserVO"
                         }
+                    },
+                    {
+                        "enum": [
+                            "customer",
+                            "merchant"
+                        ],
+                        "type": "string",
+                        "description": "Client identifier",
+                        "name": "client",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -97,13 +108,26 @@ const docTemplate = `{
                 }
             }
         },
-        "/user-ms/v1/logout": {
+        "/user-ms/v1/{client}/logout": {
             "post": {
                 "description": "invalidates the user's auth token cookie.",
                 "tags": [
                     "Authentication"
                 ],
                 "summary": "User Logout",
+                "parameters": [
+                    {
+                        "enum": [
+                            "customer",
+                            "merchant"
+                        ],
+                        "type": "string",
+                        "description": "Client identifier",
+                        "name": "client",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -111,7 +135,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user-ms/v1/users": {
+        "/user-ms/v1/{client}/users": {
             "post": {
                 "description": "This endpoint allows a new user to register by providing their details in JSON format.",
                 "consumes": [
@@ -133,6 +157,17 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/data.UserVO"
                         }
+                    },
+                    {
+                        "enum": [
+                            "customer",
+                            "merchant"
+                        ],
+                        "type": "string",
+                        "description": "Client identifier",
+                        "name": "client",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -148,7 +183,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user-ms/v1/users/activate": {
+        "/user-ms/v1/{client}/users/activate": {
             "put": {
                 "description": "This endpoint allows a new user to activate by providing their verification code in JSON format.",
                 "consumes": [
@@ -170,6 +205,17 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/data.UserActivateReq"
                         }
+                    },
+                    {
+                        "enum": [
+                            "customer",
+                            "merchant"
+                        ],
+                        "type": "string",
+                        "description": "Client identifier",
+                        "name": "client",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {

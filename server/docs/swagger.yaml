@@ -31,7 +31,7 @@ definitions:
 info:
   contact: {}
 paths:
-  /user-ms/v1/login:
+  /user-ms/v1/{client}/login:
     post:
       consumes:
       - application/json
@@ -44,6 +44,14 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/data.UserVO'
+      - description: Client identifier
+        enum:
+        - customer
+        - merchant
+        in: path
+        name: client
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -77,16 +85,25 @@ paths:
       summary: User Login
       tags:
       - Authentication
-  /user-ms/v1/logout:
+  /user-ms/v1/{client}/logout:
     post:
       description: invalidates the user's auth token cookie.
+      parameters:
+      - description: Client identifier
+        enum:
+        - customer
+        - merchant
+        in: path
+        name: client
+        required: true
+        type: string
       responses:
         "200":
           description: OK
       summary: User Logout
       tags:
       - Authentication
-  /user-ms/v1/users:
+  /user-ms/v1/{client}/users:
     post:
       consumes:
       - application/json
@@ -99,6 +116,14 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/data.UserVO'
+      - description: Client identifier
+        enum:
+        - customer
+        - merchant
+        in: path
+        name: client
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -111,7 +136,7 @@ paths:
       summary: Register a new user
       tags:
       - User
-  /user-ms/v1/users/activate:
+  /user-ms/v1/{client}/users/activate:
     put:
       consumes:
       - application/json
@@ -124,6 +149,14 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/data.UserActivateReq'
+      - description: Client identifier
+        enum:
+        - customer
+        - merchant
+        in: path
+        name: client
+        required: true
+        type: string
       produces:
       - application/json
       responses:
