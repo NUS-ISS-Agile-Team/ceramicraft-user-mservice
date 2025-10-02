@@ -39,17 +39,18 @@ func NewRouter() *gin.Engine {
 			})
 		})
 	}
+	parentGroup := basicGroup.Group("/:client")
+	parentGroup.Use(middleware.ValidateClient())
 
-	v1UnAuthed := r.Group(serviceURIPrefix + "/:client")
+	v1UnAuthed := parentGroup.Group("")
 	{
-		v1UnAuthed.Use(validateClient())
 		v1UnAuthed.POST("/login", api.UserLogin)
 		v1UnAuthed.POST("/users", api.Register)
 		v1UnAuthed.PUT("/users/activate", api.Validate)
 	}
-	v1Authed := r.Group(serviceURIPrefix + "/:client")
+	v1Authed := parentGroup.Group("")
 	{
-		v1Authed.Use(validateClient(), middleware.AuthMiddleware())
+		v1Authed.Use(middleware.AuthMiddleware())
 		v1Authed.POST("/logout", api.UserLogout)
 	}
 	return r
@@ -66,16 +67,4 @@ var passwordStrengthValidator validator.Func = func(fl validator.FieldLevel) boo
 	isValidLength := len(password) >= 8
 
 	return hasLetter && hasDigit && isValidLength
-}
-
-func validateClient() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		client := c.Param("client")
-		if client != "merchant" && client != "customer" {
-			c.JSON(400, gin.H{"error": "Invalid client type"})
-			c.Abort()
-			return
-		}
-		c.Next()
-	}
 }
