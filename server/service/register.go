@@ -9,7 +9,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/NUS-ISS-Agile-Team/ceramicraft-user-mservice/server/config"
 	"github.com/NUS-ISS-Agile-Team/ceramicraft-user-mservice/server/log"
+	"github.com/NUS-ISS-Agile-Team/ceramicraft-user-mservice/server/mq"
 	"github.com/NUS-ISS-Agile-Team/ceramicraft-user-mservice/server/proxy"
 	"github.com/NUS-ISS-Agile-Team/ceramicraft-user-mservice/server/repository"
 	"github.com/NUS-ISS-Agile-Team/ceramicraft-user-mservice/server/repository/dao"
@@ -27,6 +29,7 @@ type RegisterImpl struct {
 	userActivation dao.UserActivationDao
 	emailService   proxy.EmailService
 	txBeginner     repository.TxBeginner
+	kafkaProducer  mq.KafkaProducer
 }
 
 var (
@@ -44,6 +47,7 @@ func GetRegisterService() *RegisterImpl {
 				userActivation: dao.GetUserActivationDao(),
 				emailService:   proxy.GetEmailInstance(),
 				txBeginner:     repository.DB,
+				kafkaProducer:  mq.GetKafkaProducer(),
 			}
 		}
 	})
@@ -115,7 +119,7 @@ func (rs *RegisterImpl) VerifyAndActivate(ctx context.Context, activationCode st
 	}
 	err = rs.txBeginner.Transaction(func(tx *gorm.DB) error {
 		curTime := time.Now()
-		err = rs.userDao.UpdateUser(ctx, &model.User{ID: userActivation.UserID, Status: model.UserStatusActive, ActivateTime: &curTime, UpdatedAt: curTime}, tx)
+		err = rs.userDao.UpdateUserInTransaction(ctx, &model.User{ID: userActivation.UserID, Status: model.UserStatusActive, ActivateTime: &curTime, UpdatedAt: curTime}, tx)
 		if err != nil {
 			log.Logger.Errorf("Failed to update user status: %v", err)
 			return err
@@ -127,6 +131,12 @@ func (rs *RegisterImpl) VerifyAndActivate(ctx context.Context, activationCode st
 			return err
 		}
 		log.Logger.Infof("User activation %d marked as used", userActivation.ID)
+		eventMsg := &mq.UserActivatedEvent{UserID: userActivation.UserID, ActivateTime: curTime.Unix()}
+		err = rs.kafkaProducer.Produce(ctx, config.Config.KafkaConfig.UserActivatedTopic, fmt.Sprintf("%d", userActivation.UserID), eventMsg.ToBytes())
+		if err != nil {
+			log.Logger.Errorf("Failed to produce user activated event: %v", err)
+			return err
+		}
 		return nil
 	})
 	if err != nil {

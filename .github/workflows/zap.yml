@@ -42,11 +42,12 @@ jobs:
         - name: Build and run Docker Compose
           run: |
             docker compose -f .github/ci/docker-compose.yml --env-file env-file up --build -d
-            timeout 180 bash -c 'until [ "$(docker compose -f .github/ci/docker-compose.yml ps ceramicraft-user-mservice --format json | jq -r .Health)" = "healthy" ]; do sleep 2; done'
+            timeout 180 bash -c 'until curl -f http://localhost:8080/user-ms/v1/ping;  do sleep 2; done'
         - name: Check Docker Compose Logs
-          if: failure()
+          if: always()
           run: |
-            docker compose -f .github/ci/docker-compose.yml logs
+            docker compose -f .github/ci/docker-compose.yml ps ceramicraft-user-mservice
+            docker compose -f .github/ci/docker-compose.yml logs ceramicraft-user-mservice
         - name: Run ZAP Scan
           uses: zaproxy/action-full-scan@75ee1686750ab1511a73b26b77a2aedd295053ed
           with:

@@ -37,7 +37,7 @@ jobs:
           name: env-file
           path: env-file
   build:
-    if: ${{ github.event.inputs.command == 'deploy' }} # ← 仅在 deploy 时构建
+    if: ${{ github.event.inputs.command == 'deploy' }} 
     runs-on: ubuntu-latest
     env:
       DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}

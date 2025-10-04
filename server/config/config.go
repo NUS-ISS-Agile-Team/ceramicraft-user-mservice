@@ -16,6 +16,7 @@ type Conf struct {
 	HttpConfig  *HttpConfig  `mapstructure:"http"`
 	MySQLConfig *MySQL       `mapstructure:"mysql"`
 	EmailConfig *EmailConfig `mapstructure:"email"`
+	KafkaConfig *KafkaConfig `mapstructure:"kafka"`
 }
 
 type EmailConfig struct {
@@ -47,6 +48,16 @@ type MySQL struct {
 	UserName string `mapstructure:"userName"`
 	Password string `mapstructure:"password"`
 	DBName   string `mapstructure:"dbName"`
+}
+
+type KafkaConfig struct {
+	Brokers            []string `mapstructure:"brokers"`
+	UserActivatedTopic string   `mapstructure:"user_activated_topic"`
+	MaxBytes           int      `mapstructure:"max_bytes"`
+	Acks               int      `mapstructure:"acks"`
+	Retries            int      `mapstructure:"retries"`
+	BatchSize          int      `mapstructure:"batch_size"`
+	BatchTimeoutMillis int      `mapstructure:"batch_timeout_millis"`
 }
 
 func Init() {

@@ -4,6 +4,222 @@
         "contact": {}
     },
     "paths": {
+        "/user-ms/v1/customer/users/self": {
+            "get": {
+                "description": "This endpoint allows current login user fetch his/her profile in JSON format.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get User Profile",
+                "responses": {
+                    "200": {
+                        "description": "data is UserProfileVO",
+                        "schema": {
+                            "$ref": "#/definitions/data.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/data.BaseResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "This endpoint allows current login user update his/her profile in JSON format.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Update User Profile",
+                "parameters": [
+                    {
+                        "description": "User profile to update",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/data.UserProfileVO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "data is UserProfileVO",
+                        "schema": {
+                            "$ref": "#/definitions/data.BaseResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/data.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/data.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/user-ms/v1/customer/users/self/addresses": {
+            "get": {
+                "description": "This endpoint allows user list all their addresses.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "UserAddress"
+                ],
+                "summary": "List User Addresses",
+                "responses": {
+                    "200": {
+                        "description": "data is []UserAddressVO",
+                        "schema": {
+                            "$ref": "#/definitions/data.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/data.BaseResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "This endpoint allows user create new address in JSON format.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "UserAddress"
+                ],
+                "summary": "Create New User Address",
+                "parameters": [
+                    {
+                        "description": "user address to create",
+                        "name": "address",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/data.UserAddressVO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "data is UserAddressVO",
+                        "schema": {
+                            "$ref": "#/definitions/data.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/data.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/user-ms/v1/customer/users/self/addresses/{address_id}": {
+            "put": {
+                "description": "This endpoint allows user update their old address in JSON format.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "UserAddress"
+                ],
+                "summary": "Update existing User Address",
+                "parameters": [
+                    {
+                        "description": "user address to update",
+                        "name": "address",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/data.UserAddressVO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "data is UserAddressVO",
+                        "schema": {
+                            "$ref": "#/definitions/data.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/data.BaseResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "This endpoint allows user delete their address.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "UserAddress"
+                ],
+                "summary": "Delete User Address",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Address ID",
+                        "name": "address_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/data.BaseResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/data.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/user-ms/v1/{client}/login": {
             "post": {
                 "description": "Authenticates a user with their email and password and returns a token.",
@@ -24,7 +240,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/data.UserVO"
+                            "$ref": "#/definitions/data.UserLoginVO"
                         }
                     },
                     {
@@ -119,7 +335,22 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "Logout successful",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/data.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
                     }
                 }
             }
@@ -134,7 +365,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "User"
+                    "Register"
                 ],
                 "summary": "Register a new user",
                 "parameters": [
@@ -144,7 +375,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/data.UserVO"
+                            "$ref": "#/definitions/data.UserLoginVO"
                         }
                     },
                     {
@@ -182,7 +413,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "User"
+                    "Register"
                 ],
                 "summary": "Activate a new user",
                 "parameters": [
@@ -247,7 +478,53 @@
                 }
             }
         },
-        "data.UserVO": {
+        "data.UserAddressVO": {
+            "type": "object",
+            "required": [
+                "contact_phone",
+                "country",
+                "detail",
+                "first_name",
+                "last_name",
+                "zip_code"
+            ],
+            "properties": {
+                "city": {
+                    "type": "string"
+                },
+                "contact_phone": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "detail": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_default": {
+                    "type": "boolean"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "province": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                },
+                "zip_code": {
+                    "type": "string"
+                }
+            }
+        },
+        "data.UserLoginVO": {
             "type": "object",
             "required": [
                 "email",
@@ -261,6 +538,26 @@
                     "type": "integer"
                 },
                 "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "data.UserProfileVO": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "default_address": {
+                    "$ref": "#/definitions/data.UserAddressVO"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
                     "type": "string"
                 }
             }
