@@ -41,6 +41,7 @@ func Init() {
 	err = DB.AutoMigrate(
 		&model.User{},
 		&model.UserActivation{},
+		&model.UserAddress{},
 	)
 	if err != nil {
 		panic(err)

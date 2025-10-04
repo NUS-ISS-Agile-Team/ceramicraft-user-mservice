@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	mq_mock "github.com/NUS-ISS-Agile-Team/ceramicraft-user-mservice/server/mq/mocks"
 	proxy_mock "github.com/NUS-ISS-Agile-Team/ceramicraft-user-mservice/server/proxy/mocks"
 	dao_mock "github.com/NUS-ISS-Agile-Team/ceramicraft-user-mservice/server/repository/dao/mocks"
 	"github.com/NUS-ISS-Agile-Team/ceramicraft-user-mservice/server/repository/model"
@@ -173,11 +174,13 @@ func TestVerifyAndActivate(t *testing.T) {
 		userActivationDao := new(dao_mock.UserActivationDao)
 		userDao := new(dao_mock.UserDao)
 		emailSender := new(proxy_mock.EmailService)
+		kafkaProducer := new(mq_mock.KafkaProducer)
 		service := &RegisterImpl{
 			userDao:        userDao,
 			userActivation: userActivationDao,
 			emailService:   emailSender,
 			txBeginner:     &fakeTx{DB: initMemDb(t)},
+			kafkaProducer:  kafkaProducer,
 		}
 		validCode := "valid-code"
 		userActivationDao.On("GetByCode", mock.Anything, mock.Anything).Return(&model.UserActivation{
@@ -186,18 +189,20 @@ func TestVerifyAndActivate(t *testing.T) {
 			ExpiresAt: time.Now().Add(time.Minute * 10),
 		}, nil)
 
-		userDao.On("UpdateUser", mock.Anything, mock.MatchedBy(func(arg *model.User) bool {
+		userDao.On("UpdateUserInTransaction", mock.Anything, mock.MatchedBy(func(arg *model.User) bool {
 			return arg.Status == model.UserStatusActive
 		}), mock.Anything).Return(nil)
 		userActivationDao.On("DeleteByUserId", mock.Anything, 1, mock.Anything).Return(nil)
+		kafkaProducer.On("Produce", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
 		err := service.VerifyAndActivate(ctx, validCode)
 		if err != nil {
 			t.Fatalf("Expected no error, got %v", err)
 		}
-		userDao.AssertCalled(t, "UpdateUser", mock.Anything, mock.Anything, mock.Anything)
+		userDao.AssertCalled(t, "UpdateUserInTransaction", mock.Anything, mock.Anything, mock.Anything)
 		userActivationDao.AssertCalled(t, "DeleteByUserId", mock.Anything, 1, mock.Anything)
 		userDao.AssertExpectations(t)
 		userActivationDao.AssertExpectations(t)
+		kafkaProducer.AssertCalled(t, "Produce", mock.Anything, mock.Anything, mock.Anything, mock.Anything)
 	})
 
 	t.Run("Invalid activation code", func(t *testing.T) {

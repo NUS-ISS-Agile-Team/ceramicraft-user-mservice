@@ -17,14 +17,14 @@ const tokenExpireDuration = 3600 * 24 * 365 // 1 year
 // @Tags Authentication
 // @Accept json
 // @Produce json
-// @Param user body data.UserVO true "User login information"
+// @Param user body data.UserLoginVO true "User login information"
 // @Param client path string true "Client identifier" Enums(customer, merchant)
 // @Success 200	{object} data.BaseResponse{data=string} "Login successful, returns auth token in cookie"
 // @Failure 400 {object} data.BaseResponse{data=string}
 // @Failure 500 {object} data.BaseResponse{data=string}
 // @Router /user-ms/v1/{client}/login [post]
 func UserLogin(c *gin.Context) {
-	user := &data.UserVO{}
+	user := &data.UserLoginVO{}
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

@@ -16,7 +16,43 @@ definitions:
     required:
     - code
     type: object
-  data.UserVO:
+  data.UserAddressVO:
+    properties:
+      city:
+        type: string
+      contact_phone:
+        type: string
+      country:
+        type: string
+      created_at:
+        type: integer
+      detail:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: integer
+      is_default:
+        type: boolean
+      last_name:
+        type: string
+      province:
+        type: string
+      updated_at:
+        type: integer
+      user_id:
+        type: integer
+      zip_code:
+        type: string
+    required:
+    - contact_phone
+    - country
+    - detail
+    - first_name
+    - last_name
+    - zip_code
+    type: object
+  data.UserLoginVO:
     properties:
       email:
         type: string
@@ -27,6 +63,19 @@ definitions:
     required:
     - email
     - password
+    type: object
+  data.UserProfileVO:
+    properties:
+      avatar:
+        type: string
+      default_address:
+        $ref: '#/definitions/data.UserAddressVO'
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
     type: object
 info:
   contact: {}
@@ -43,7 +92,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/data.UserVO'
+          $ref: '#/definitions/data.UserLoginVO'
       - description: Client identifier
         enum:
         - customer
@@ -115,7 +164,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/data.UserVO'
+          $ref: '#/definitions/data.UserLoginVO'
       - description: Client identifier
         enum:
         - customer
@@ -135,7 +184,7 @@ paths:
             $ref: '#/definitions/data.BaseResponse'
       summary: Register a new user
       tags:
-      - User
+      - Register
   /user-ms/v1/{client}/users/activate:
     put:
       consumes:
@@ -168,5 +217,147 @@ paths:
             $ref: '#/definitions/data.BaseResponse'
       summary: Activate a new user
       tags:
+      - Register
+  /user-ms/v1/customer/users/self:
+    get:
+      consumes:
+      - application/json
+      description: This endpoint allows current login user fetch his/her profile in
+        JSON format.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/data.UserProfileVO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/data.BaseResponse'
+      summary: Get User Profile
+      tags:
       - User
+    put:
+      consumes:
+      - application/json
+      description: This endpoint allows current login user update his/her profile
+        in JSON format.
+      parameters:
+      - description: User profile to update
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/data.UserProfileVO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/data.UserProfileVO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/data.BaseResponse'
+      summary: Update User Profile
+      tags:
+      - User
+  /user-ms/v1/customer/users/self/addresses:
+    get:
+      consumes:
+      - application/json
+      description: This endpoint allows user list all their addresses.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/data.UserAddressVO'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/data.BaseResponse'
+      summary: List User Addresses
+      tags:
+      - UserAddress
+    post:
+      consumes:
+      - application/json
+      description: This endpoint allows user create new address in JSON format.
+      parameters:
+      - description: user address to create
+        in: body
+        name: address
+        required: true
+        schema:
+          $ref: '#/definitions/data.UserAddressVO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/data.UserAddressVO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/data.BaseResponse'
+      summary: Create New User Address
+      tags:
+      - UserAddress
+  /user-ms/v1/customer/users/self/addresses/{address_id}:
+    delete:
+      consumes:
+      - application/json
+      description: This endpoint allows user delete their address.
+      parameters:
+      - description: Address ID
+        in: path
+        name: address_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/data.BaseResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/data.BaseResponse'
+      summary: Delete User Address
+      tags:
+      - UserAddress
+    put:
+      consumes:
+      - application/json
+      description: This endpoint allows user update their old address in JSON format.
+      parameters:
+      - description: user address to update
+        in: body
+        name: address
+        required: true
+        schema:
+          $ref: '#/definitions/data.UserAddressVO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/data.UserAddressVO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/data.BaseResponse'
+      summary: Update existing User Address
+      tags:
+      - UserAddress
 swagger: "2.0"
