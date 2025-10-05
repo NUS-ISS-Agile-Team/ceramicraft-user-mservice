@@ -39,19 +39,27 @@ func NewRouter() *gin.Engine {
 			})
 		})
 	}
-	parentGroup := basicGroup.Group("/:client")
-	parentGroup.Use(middleware.ValidateClient())
 
-	v1UnAuthed := parentGroup.Group("")
+	v1UnAuthed := basicGroup.Group("")
 	{
-		v1UnAuthed.POST("/login", api.UserLogin)
-		v1UnAuthed.POST("/users", api.Register)
-		v1UnAuthed.PUT("/users/activate", api.Validate)
+		v1UnAuthed.POST("/customer/login", api.UserLogin)
+		v1UnAuthed.POST("/customer/users", api.Register)
+		v1UnAuthed.PUT("/customer/users/activate", api.Validate)
+
+		v1UnAuthed.POST("/merchant/login", api.UserLogin)
 	}
-	v1Authed := parentGroup.Group("")
+	v1Authed := basicGroup.Group("")
 	{
 		v1Authed.Use(middleware.AuthMiddleware())
-		v1Authed.POST("/logout", api.UserLogout)
+		v1Authed.POST("/customer/logout", api.UserLogout)
+		v1Authed.GET("/customer/users/self", api.GetUserProfile)
+		v1Authed.PUT("/customer/users/self", api.UpdateUserProfile)
+		v1Authed.GET("/customer/users/self/addresses", api.ListUserAddresses)
+		v1Authed.POST("/customer/users/self/addresses", api.AddUserAddress)
+		v1Authed.PUT("/customer/users/self/addresses/:address_id", api.UpdateUserAddress)
+		v1Authed.DELETE("/customer/users/self/addresses/:address_id", api.DeleteUserAddress)
+
+		v1Authed.POST("/merchant/logout", api.UserLogout)
 	}
 	return r
 }

@@ -20,6 +20,9 @@ func initEnv() {
 			FilePath: "",
 		},
 		EmailConfig: &config.EmailConfig{},
+		KafkaConfig: &config.KafkaConfig{
+			UserActivatedTopic: "user_activated",
+		},
 	}
 	log.InitLogger()
 	err := os.Setenv("JWT_SECRET", "TEST_SECRET_KEY")

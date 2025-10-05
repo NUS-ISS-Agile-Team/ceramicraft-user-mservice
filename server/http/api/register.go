@@ -11,21 +11,21 @@ import (
 // Register handles the user registration process.
 // @Summary Register a new user
 // @Description This endpoint allows a new user to register by providing their details in JSON format.
-// @Tags User
+// @Tags Register
 // @Accept json
 // @Produce json
-// @Param user body data.UserVO true "User registration details"
+// @Param user body data.UserLoginVO true "User registration details"
 // @Param client path string true "Client identifier" Enums(customer, merchant)
 // @Success 200
 // @Failure 500 {object} data.BaseResponse
 // @Router /user-ms/v1/{client}/users [post]
 func Register(c *gin.Context) {
-	user := &data.UserVO{}
+	user := &data.UserLoginVO{}
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	err := service.GetRegisterService().Register(c, user.Email, user.Password)
+	err := service.GetRegisterService().Register(c.Request.Context(), user.Email, user.Password)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -36,7 +36,7 @@ func Register(c *gin.Context) {
 // Activate handles the user registration activation process.
 // @Summary Activate a new user
 // @Description This endpoint allows a new user to activate by providing their verification code in JSON format.
-// @Tags User
+// @Tags Register
 // @Accept json
 // @Produce json
 // @Param user body data.UserActivateReq true "User activate request"
@@ -50,7 +50,7 @@ func Validate(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	err := service.GetRegisterService().VerifyAndActivate(c, req.Code)
+	err := service.GetRegisterService().VerifyAndActivate(c.Request.Context(), req.Code)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

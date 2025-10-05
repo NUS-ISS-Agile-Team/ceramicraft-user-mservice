@@ -14,6 +14,8 @@ type User struct {
 	Email        string     `gorm:"type:varchar(128);unique;not null"`
 	Password     string     `gorm:"type:varchar(255);not null"`
 	Status       int        `gorm:"type:int;not null"`
+	Name         string     `gorm:"type:varchar(64)"`
+	AvatarId     string     `gorm:"type:varchar(64)"`
 	ActivateTime *time.Time `gorm:"column:activate_time"`
 	CreatedAt    time.Time  `gorm:"column:created_at;autoCreateTime"`
 	UpdatedAt    time.Time  `gorm:"column:updated_at;autoUpdateTime"`

@@ -20,3 +20,12 @@ mysql:
 
 email:
   smtp_host: "smtp.qq.com"
+
+kafka:
+  brokers: ["kafka-container:9092"]
+  user_activated_topic: "user-activated"
+  max_bytes: 1048576
+  acks: 1
+  retries: 3
+  batch_timeout_millis: 5
+  batch_size: 16384
