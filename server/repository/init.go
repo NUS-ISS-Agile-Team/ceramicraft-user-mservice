@@ -22,6 +22,7 @@ type TxBeginner interface {
 var _ TxBeginner = (*gorm.DB)(nil) // Compile-time interface check
 
 func Init() {
+	fmt.Println("Initializing database...")
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		config.Config.MySQLConfig.UserName,
 		config.Config.MySQLConfig.Password,
@@ -35,7 +36,9 @@ func Init() {
 			SkipDefaultTransaction: true,
 		},
 	)
+	fmt.Println("Database connection established.")
 	if err != nil {
+		fmt.Printf("failed to connect database: %v", err)
 		panic(err)
 	}
 	err = DB.AutoMigrate(
@@ -44,6 +47,7 @@ func Init() {
 		&model.UserAddress{},
 	)
 	if err != nil {
+		fmt.Printf("failed to migrate database: %v", err)
 		panic(err)
 	}
 }

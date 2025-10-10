@@ -16,10 +16,12 @@ var (
 )
 
 func InitLogger() {
+	fmt.Println("Initializing logger...")
 	writeSyncer := getLogWriter()
 	encoder := getEncoder()
-	core := zapcore.NewCore(encoder, writeSyncer, getLogLevel())
+	core := zapcore.NewCore(encoder, zapcore.NewMultiWriteSyncer(writeSyncer, zapcore.AddSync(os.Stdout)), getLogLevel())
 	Logger = zap.New(core, zap.AddCaller()).Sugar()
+	fmt.Println("Logger initialized.")
 }
 
 func getLogLevel() zapcore.Level {
