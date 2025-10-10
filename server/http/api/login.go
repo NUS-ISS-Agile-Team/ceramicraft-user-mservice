@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/NUS-ISS-Agile-Team/ceramicraft-user-mservice/server/http/data"
 	"github.com/NUS-ISS-Agile-Team/ceramicraft-user-mservice/server/log"
@@ -37,7 +38,15 @@ func UserLogin(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, data.BaseResponse{ErrMsg: err.Error()})
 		return
 	}
-	c.SetCookie("auth-token", token, tokenExpireDuration, "/", c.Request.Host, true, true)
+	http.SetCookie(c.Writer, &http.Cookie{
+		Name:     "auth-token",
+		Value:    token,
+		Path:     "/",
+		Domain:   c.Request.Host,
+		Expires:  time.Now().Add(time.Duration(tokenExpireDuration) * time.Second),
+		Secure:   false,
+		HttpOnly: true,
+	})
 	c.JSON(http.StatusOK, data.BaseResponse{Data: "Login successful"})
 }
 
