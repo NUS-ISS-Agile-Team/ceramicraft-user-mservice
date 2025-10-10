@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/spf13/viper"
@@ -66,21 +67,25 @@ func Init() {
 	viper.SetConfigType("yml")
 	viper.AddConfigPath(workDir + "/resources")
 	viper.AddConfigPath(workDir)
-
+	fmt.Println("Loading config from:", workDir)
 	err := viper.ReadInConfig()
 	if err != nil {
 		panic(err)
 	}
+	fmt.Println("Config file loaded successfully")
 	err = viper.Unmarshal(&Config)
 	if err != nil {
 		panic(err)
 	}
+	fmt.Printf("Config unmarshalled successfully: %v", Config)
 	mysqlPassword := os.Getenv("MYSQL_PASSWORD")
 	if mysqlPassword != "" {
 		Config.MySQLConfig.Password = mysqlPassword
 	} else {
 		panic("MYSQL_PASSWORD environment variable is not set")
 	}
+	fmt.Println("MySQL password loaded from environment variable")
 	Config.EmailConfig.SmtpPass = os.Getenv("SMTP_PASSWORD")
 	Config.EmailConfig.SmtpEmailFrom = os.Getenv("SMTP_EMAIL_FROM")
+	fmt.Println("Email config loaded from environment variables")
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -19,6 +20,7 @@ var (
 )
 
 func main() {
+	fmt.Println("Starting ceramicraft-user-mservice...")
 	config.Init()
 	log.InitLogger()
 	utils.InitJwtSecret()
