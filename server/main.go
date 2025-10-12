@@ -21,12 +21,6 @@ var (
 )
 
 func main() {
-	defer func() {
-		if r := recover(); r != nil {
-			fmt.Printf("panic: %v", r)
-		}
-		fmt.Println("=== app exit")
-	}()
 	fmt.Println("Starting ceramicraft-user-mservice...")
 	config.Init()
 	log.InitLogger()
