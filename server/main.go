@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"os/signal"
+	"runtime/debug"
 	"syscall"
 
 	"github.com/NUS-ISS-Agile-Team/ceramicraft-user-mservice/common/utils"
@@ -19,15 +21,21 @@ var (
 )
 
 func main() {
+	fmt.Println("Starting ceramicraft-user-mservice...")
 	config.Init()
 	log.InitLogger()
+	log.Logger.Info("Logger initialized.")
 	utils.InitJwtSecret()
+	log.Logger.Info("JWT secret initialized.")
 	repository.Init()
+	log.Logger.Info("Database initialized.")
 	mq.InitKafka()
+	log.Logger.Info("Kafka initialized.")
 	go grpc.Init(sigCh)
 	go http.Init(sigCh)
 	// listen terminage signal
 	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
 	sig := <-sigCh // Block until signal is received
-	log.Logger.Infof("Received signal: %v, shutting down...", sig)
+	debug.PrintStack()
+	log.Logger.Infof("Received signal: %v, shutting down", sig)
 }

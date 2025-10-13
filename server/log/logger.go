@@ -37,7 +37,11 @@ func getLogLevel() zapcore.Level {
 func getEncoder() zapcore.Encoder {
 	encoderConfig := zap.NewProductionEncoderConfig()
 	encoderConfig.EncodeTime = func(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
-		enc.AppendString(t.Local().Format("2006-01-02 15:04:05"))
+		location, err := time.LoadLocation("Asia/Singapore")
+		if err != nil {
+			location = time.Local
+		}
+		enc.AppendString(t.In(location).Format("2006-01-02 15:04:05"))
 	}
 	encoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
 	return zapcore.NewConsoleEncoder(encoderConfig)

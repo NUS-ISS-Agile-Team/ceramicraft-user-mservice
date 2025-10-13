@@ -23,7 +23,7 @@ RUN adduser -D -h /home/appuser appuser && \
     mkdir -p logs && \
     chown -R appuser:appuser config/ && \
     chown -R appuser:appuser logs/ && \
-    chmod +r config/* && \
+    chmod +w config/* && \
     chmod +w logs && \
     chmod +x main
 
