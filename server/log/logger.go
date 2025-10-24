@@ -19,8 +19,13 @@ func InitLogger() {
 	writeSyncer := getLogWriter()
 	encoder := getEncoder()
 	fileCore := zapcore.NewCore(encoder, writeSyncer, getLogLevel())
-	consoleCore := zapcore.NewCore(encoder, zapcore.AddSync(os.Stdout), getLogLevel())
-	core := zapcore.NewTee(fileCore, consoleCore)
+	var core zapcore.Core
+	if config.Config.LogConfig.FilePath != "" {
+		consoleCore := zapcore.NewCore(encoder, zapcore.AddSync(os.Stdout), getLogLevel())
+		core = zapcore.NewTee(fileCore, consoleCore)
+	} else {
+		core = fileCore
+	}
 	Logger = zap.New(core, zap.AddCaller()).Sugar()
 }
 
