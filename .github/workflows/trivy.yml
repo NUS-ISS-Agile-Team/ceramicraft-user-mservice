@@ -31,4 +31,4 @@ jobs:
           format: 'table'
           severity: 'CRITICAL,HIGH'
           exit-code: '1'          # non zero exit code if vulnerabilities found
-          ignore-unfixed: true    # ingnore unfixed vulnerabilities
+          ignore-unfixed: true    # ignore unfixed vulnerabilities
