@@ -14,7 +14,9 @@ on:
         default: 'deploy'
         type: choice
         options:
+          - build
           - deploy
+          - swarm-deploy
           - restart
           - rollback
 
@@ -37,7 +39,7 @@ jobs:
           name: env-file
           path: env-file
   build:
-    if: ${{ github.event.inputs.command == 'deploy' }} 
+    if: ${{ github.event.inputs.command == 'deploy' }} || ${{ github.event.inputs.command == 'build' }} || ${{ github.event.inputs.command == 'swarm-deploy' }}
     runs-on: ubuntu-latest
     env:
       DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
@@ -104,3 +106,16 @@ jobs:
           docker stop ceramicraft-user-mservice || true
           docker rm ceramicraft-user-mservice || true
           docker run -d --name ceramicraft-user-mservice --network ceramicraft-network  -v /home/ubuntu/logs:/app/logs --env-file env-file "${DOCKER_HUB_USERNAME}/ceramicraft-user-mservice:${{ github.event.inputs.version }}"
+  swarm-deploy:
+    if: ${{ github.event.inputs.command == 'swam-deploy' }}
+    runs-on: self-hosted
+    needs: build
+    env:
+      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+    steps:
+      - name: pull the docker image
+        run: |
+          docker pull "${DOCKER_HUB_USERNAME}/ceramicraft-user-mservice:${{ github.event.inputs.version }}"
+      - name: update the service
+        run: |
+          docker service update --force --image "${DOCKER_HUB_USERNAME}/ceramicraft-user-mservice:${{ github.event.inputs.version }}" ms-stack_user-ms || true
