@@ -21,7 +21,7 @@ var (
 )
 
 func main() {
-	fmt.Println("Starting ceramicraft-user-mservice...")
+	fmt.Println("Starting ceramicraft-user-mservice demo...")
 	config.Init()
 	log.InitLogger()
 	log.Logger.Info("Logger initialized.")
