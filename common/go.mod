@@ -1,6 +1,6 @@
 module github.com/NUS-ISS-Agile-Team/ceramicraft-user-mservice/common
 
-go 1.24.0
+go 1.24.9
 
 require (
 	github.com/gin-gonic/gin v1.11.0

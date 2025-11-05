@@ -1,6 +1,6 @@
 module github.com/NUS-ISS-Agile-Team/ceramicraft-user-mservice/client
 
-go 1.24.0
+go 1.24.9
 
 require (
 	github.com/NUS-ISS-Agile-Team/ceramicraft-user-mservice/common v0.0.0-20250923124507-702f9ea13f21 // indirect
